@@ -11,7 +11,6 @@ st.header("Tell ord i korpus")
 st.markdown("Velg et korpus fra [corpus-appen](https://beta.nb.no/dhlab/corpus/)")
 
 
-
 uploaded_file = st.file_uploader("last opp korpus", help="slipp en fil, eller velg fra en mappe")
 if uploaded_file is not None:
     dataframe = pd.read_excel(uploaded_file)
@@ -26,5 +25,6 @@ if uploaded_file is not None:
     st.subheader('Totalen')
     totalen = pd.DataFrame(dtm.counts.sum(axis = 1))
     totalen.columns = ['freq']
+    st.write(f"Antall unike ord {len(totalen)}, løpende ord {int(totalen.freq.sum())}")
     st.session_state['totalen'] = totalen
     st.write(totalen)
