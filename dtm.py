@@ -23,3 +23,8 @@ if uploaded_file is not None:
     dtm = dh.Counts(corpus)
     st.write(dtm.counts)
     st.session_state['dtm'] = dtm.counts
+    st.subheader('Totalen')
+    totalen = dtm.counts.sum(axis = 1)
+    totalen.columns = ['freq']
+    st.session_state['totalen'] = totalen
+    st.table(totalen)
