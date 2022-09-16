@@ -1,13 +1,16 @@
 import pandas as pd
 import streamlit as st
 
-st.session_state.update(st.session_state)
+#st.session_state.update(st.session_state)
 
-df = st.session_state['dtm']
-
-#st.table(df.head())
 st.header('Inspiser termene i korpuset')
 
+if "dtm" in st.session_state:
+    df = st.session_state['dtm']
+else:
+    st.write('dokumentene er borte - bygg på nytt')
+    df = pd.DataFrame()
+    
 with st.form("my_form"):
     
     col1, col2 = st.columns(2)
