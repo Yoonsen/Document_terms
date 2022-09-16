@@ -1,7 +1,7 @@
 import pandas as pd
 import streamlit as st
 
-#st.session_state.update(st.session_state)
+st.session_state.update(st.session_state)
 
 df = st.session_state['dtm']
 
