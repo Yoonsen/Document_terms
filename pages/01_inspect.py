@@ -33,5 +33,5 @@ with st.form("my_form"):
         tbl = df.loc[[w for w in words if w in df.index]]
     if submitted:
         st.table(
-            tbl.sort_values(by = tbl.columns[0], ascending = False).head(50).style.background_gradient()
+            tbl.sort_values(by = tbl.columns[sort_col], ascending = False).head(50).style.background_gradient()
         )
