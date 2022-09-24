@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: document-terms-deployment
+  labels:
+    app: document-terms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: document-terms
+  template:
+    metadata:
+      labels:
+        app: document-terms
+    spec:
+      containers:
+      - name: document-terms
+        image: gcr.io/norwegian-language-bank/document-terms:61fdc77e-6a13-4e8b-a7a2-434ef1037ee6
+        command: [ "/bin/bash" ]
+        args: [ "-c", "streamlit run dtm.py --server.port 8501 --server.baseUrlPath /document-terms --browser.gatherUsageStats=False"]
+        ports:
+        - containerPort: 8501
+        resources:
+          limits:
+            cpu: 250m
+            ephemeral-storage: 256Mi
+            memory: 512Mi
+          requests:
+            cpu: 250m
+            ephemeral-storage: 256Mi
+            memory: 512Mi

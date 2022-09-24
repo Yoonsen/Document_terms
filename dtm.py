@@ -15,16 +15,21 @@ uploaded_file = st.file_uploader("last opp korpus", help="slipp en fil, eller ve
 if uploaded_file is not None:
     dataframe = pd.read_excel(uploaded_file)
     st.subheader('Korpus')
-    st.write(dataframe.head(3))
-    st.subheader('Dokument/term-matrise')
+    st.write("Et utvalg fra korpuset")
+    st.write(dataframe.sample(20))
     corpus = dh.Corpus(doctype='digibok',limit=0)
     corpus.extend_from_identifiers(list(dataframe.urn))
-    dtm = dh.Counts(corpus)
-    st.write(dtm.counts)
-    st.session_state['dtm'] = dtm.counts
-    st.subheader('Totalen')
-    totalen = pd.DataFrame(dtm.counts.sum(axis = 1))
-    totalen.columns = ['freq']
-    st.write(f"Antall unike ord {len(totalen)}, løpende ord {int(totalen.freq.sum())}")
-    st.session_state['totalen'] = totalen
-    st.write(totalen)
+    
+    st.session_state['corpus'] = corpus
+    
+#    st.subheader('Dokument/term-matrise')
+     
+#    dtm = dh.Counts(corpus)
+#    st.write(dtm.counts)
+#    st.session_state['dtm'] = dtm.counts
+#    st.subheader('Totalen')
+#    totalen = pd.DataFrame(dtm.counts.sum(axis = 1))
+#    totalen.columns = ['freq']
+#    st.write(f"Antall unike ord {len(totalen)}, løpende ord {int(totalen.freq.sum())}")
+#    st.session_state['totalen'] = totalen
+#    st.write(totalen)
