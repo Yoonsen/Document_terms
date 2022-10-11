@@ -16,9 +16,9 @@ spec:
     spec:
       containers:
       - name: document-terms
-        image: gcr.io/norwegian-language-bank/document-terms:61fdc77e-6a13-4e8b-a7a2-434ef1037ee6
+        image: gcr.io/norwegian-language-bank/document-terms:c0fad5ea-575c-4249-aca7-4fe082b7fd08
         command: [ "/bin/bash" ]
-        args: [ "-c", "streamlit run dtm.py --server.port 8501 --server.baseUrlPath /document-terms --browser.gatherUsageStats=False"]
+        args: [ "-c", "streamlit run dtm_one_page.py --server.port 8501 --server.baseUrlPath /document-terms --browser.gatherUsageStats=False"]
         ports:
         - containerPort: 8501
         resources:
