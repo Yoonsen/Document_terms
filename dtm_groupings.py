@@ -163,10 +163,6 @@ if corpus_defined:
 
         tbl = df.loc[[w for w in words if w in df.index]]
         if submitted:
-
-            #tbl = tbl.rename(columns=names)
-
-
             if  gruppering == "--ingen gruppering--":
                 t = tbl.transpose()
                 t = t.reset_index()
