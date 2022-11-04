@@ -76,6 +76,7 @@ if uploaded_file is not None:
     corpus = dh.Corpus(doctype='digibok',limit=0)
     corpus.extend_from_identifiers(list(dataframe.urn))
 
+
 if corpus_defined:
     if corpus.size > 1:
         st.sidebar.write(f"Korpuset består av {corpus.size} dokumenter")
@@ -114,7 +115,7 @@ if corpus_defined:
     corpusdf = corpus.corpus
     
     with st.form("my_form"):
-        col1, col2 = st.columns(2)
+        col1, col2, col3 = st.columns(3)
         with col1:
             words = st.text_input(
                 "Frekvenser for en liste ord", 
@@ -137,48 +138,29 @@ if corpus_defined:
             df = get_counts(words = words, corpus = corpus)
 
         with col2:
-            columns = st.multiselect("Hvordan skal dokumentene vises", 
-                                     options=list(corpusdf.columns),
-                                     default=['authors', 'title', 'year'], 
-                                     help="Plukk ut metadata som beskriver "
-                                     "dokumentene eller skiller dem fra hverandre")
-
-            if columns == [] or 'urn' != columns[0]:
-                columns.insert(0, 'urn')
-
-
-            names = {x[0]:' '.join([str(z) for z in x[1:]]) for x in corpusdf[columns].values}
-
-
-        colA, colB = st.columns(2)
-
-        with colA:
             gruppering = st.selectbox(
                 'Velg grupperingskolonne', 
-                options = ["--ingen gruppering--"] + list(corpusdf.columns)
+                options = ["--ingen gruppering--"] + [x for x in corpusdf.columns if x not in 'dhlabid urn sesamid isbn oaiid isbn10'.split()]
             )
-            
+        
+        with col3:
+            axis_coloring = st.checkbox("Kryss av for å fargelegge matrisen horisontalt", value=True, help="Fjern avkrysning for endringer vertikalt")
+            if axis_coloring == True:
+                axis = 1
+            else:
+                axis = 0
+                
         submitted = st.form_submit_button("Klikk her når alt er klart")
-        #st.write(words)
-
+        
         tbl = df.loc[[w for w in words if w in df.index]]
+        
         if submitted:
             if  gruppering == "--ingen gruppering--":
                 t = tbl.transpose()
                 t = t.reset_index()
-
-                a = list(t.columns[1:])
-                a.append(str(t.columns[0]))
-                t = t[a]
-                st.dataframe(
-                    t.sort_values(
-                        by = t.columns[0], 
-                        ascending = False).style.format(precision=0).background_gradient().hide(axis=0)
-                )
+                t['link'] = t.urn.map(lambda x: f"https://nb.no/items/{x}")
+                st.dataframe(t[t.columns[1:]].style.format(precision=0).background_gradient(axis=axis))
             else:
                 de_df = deduplicate(docs = corpusdf, column=gruppering)
                 count_df = countby(dedup=de_df, counts = tbl, column = gruppering)
-                st.dataframe(count_df.style.format(precision=0).background_gradient().hide(axis=0))
-#        except:
-#                st.markdown("Noe gikk galt - kolonnenavn må være entydig, om dokumentinformasjon antyder #kolonner, prøv å legg til _dhlabid_ som del av visningen")
-#                traceback.print_exc() 
+                st.dataframe(count_df.style.format(precision=0).background_gradient(axis = axis))
