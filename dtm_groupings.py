@@ -3,23 +3,15 @@ import streamlit as st
 import pandas as pd
 import re
 import requests
-
-
-
-
 import traceback
 
-normal_size = 800
-max_doc = 1200
+normal_size = 5000
+max_doc = 50000
 
-
-
-#@st.cache_data(show_spinner=False)
+@st.cache_data(show_spinner=False)
 def get_counts(words = None, corpus = None):
-    
     res = dh.api.dhlab_api.get_document_frequencies(list(corpus.urn), words=words)['freq']
     return res
-
 
 @st.cache_data(show_spinner=False)
 def deduplicate(docs = None, column = None):
@@ -86,11 +78,11 @@ if uploaded_file is not None:
 if corpus_defined:
     if len(corpus) > 1:
         
-        st.sidebar.write(f"Korpuset består av {corpus.size} dokumenter")
-        if corpus.size > max_doc:
+        st.sidebar.write(f"Korpuset består av {len(corpus)} dokumenter")
+        if len(corpus) > max_doc:
             st.sidebar.write(f"Siden korpuset er ganske stort, arbeides det videre med et utvalg av dokumenter. Lag et mindre korpus for å få med alt. " 
                              "Utvalget vil kunne endre seg fra søk til søk")
-            samplesize = st.sidebar.number_input("Utvalgsstørrelse", 1, normal_size, int(normal_size/2))
+            samplesize = st.sidebar.number_input("Utvalgsstørrelse", 1, int(normal_size), int(normal_size)/2)
             corpus = corpus.sample(int(samplesize))
             
             
@@ -149,7 +141,7 @@ if corpus_defined:
     with col2:
         gruppering = st.selectbox(
             'Velg grupperingskolonne', 
-            options = ["frekvens pr. bok"] + [x for x in corpus.columns if x not in 'dhlabid urn sesamid isbn oaiid isbn10'.split()]
+            options = ["hele korpuset"] + ["frekvens pr. bok"] + [x for x in corpus.columns if x not in 'dhlabid urn sesamid isbn oaiid isbn10'.split()]
         )
 
     with col3:
@@ -161,7 +153,6 @@ if corpus_defined:
 
     #submitted = st.form_submit_button("Klikk her når alt er klart")
 
-    
     tbl = df.loc[[w for w in words if w in df.index]]
 
     if  gruppering == "frekvens pr. bok":
@@ -173,6 +164,12 @@ if corpus_defined:
                      #.background_gradient(axis=axis)
                      .to_html(render_links=True, escape=False),unsafe_allow_html=True)
         )
+
+    elif gruppering == "hele korpuset":
+        t = tbl.transpose().sum().reset_index()
+        t.columns = ["word", "freq"]
+        st.dataframe(t)
+
     else:
         de_df = deduplicate(docs = corpus, column=gruppering)
         #st.write(de_df)
