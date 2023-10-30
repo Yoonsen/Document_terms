@@ -1,6 +1,6 @@
-dhlab>=2.9.0
+dhlab<=3.0.0
 pandas
-streamlit
-requests==2.23.0
-urllib3==1.25.8
+streamlit>=1.18.0
+requests
+urllib3
 openpyxl
